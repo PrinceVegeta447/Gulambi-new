@@ -29,7 +29,7 @@ REGULAR_BALL = set([
     "Unfezant", "Tranquill", "Pidove", "Barraskewda", "Arrokuda", "Zubat", "Golbat", "Gastly", "Haunter", 
     "Clauncher", "Clawitzer", "Froslass", "Cutiefly", "Ribombee", "Arctozolt", "Arctovish", "Chewtle", 
     "Cufant", "Impidimp", "Morgrem", "Hatenna", "Hattrem", "Trumbeak", "Charjabug", "Rockruff", "Mudbray", 
-    "Bounsweet", "Steenee", "Sliggoo", "Squirtle", "Wartortle", "Mantine", "Mantyke", "Gligar", "Gliscor", "Abra
+    "Bounsweet", "Steenee", "Sliggoo", "Squirtle", "Wartortle", "Mantine", "Mantyke", "Gligar", "Gliscor", "Abra"
 ])
      
 REPEAT_BALL = set([
