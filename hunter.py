@@ -507,67 +507,63 @@ class PokemonHuntingEngine:
 
 
     async def battle(self, event: events.MessageEdited.Event) -> None:
-        """Handles ongoing battle messages, making decisions based on Pokemon health."""
-        substring = 'Wild'
-        if substring in event.raw_text and self.automation_orchestrator.is_automation_active:
-            wild_pokemon_name_match = regex.search(r"Wild (\w+) \[.*\]\nLv\. \d+  •  HP \d+/\d+", event.raw_text)
-            pok_name = wild_pokemon_name_match.group(1).strip() if wild_pokemon_name_match else "Unknown Pokemon"
-            wild_pokemon_hp_match = regex.search(r"Wild .* \[.*\]\nLv\. \d+  •  HP (\d+)/(\d+)", event.raw_text)
+    """Handles ongoing battle messages, making decisions based on Pokemon health."""
+    substring = 'Wild'
+    if substring in event.raw_text and self.automation_orchestrator.is_automation_active:
+        wild_pokemon_name_match = regex.search(r"Wild (\w+) .*\nLv\. \d+  •  HP \d+/\d+", event.raw_text)
+        pok_name = wild_pokemon_name_match.group(1).strip() if wild_pokemon_name_match else "Unknown Pokemon"
+        wild_pokemon_hp_match = regex.search(r"Wild .* .*\nLv\. \d+  •  HP (\d+)/(\d+)", event.raw_text)
 
-            if wild_pokemon_hp_match:
-                wild_max_hp = int(wild_pokemon_hp_match.group(2))
-                wild_current_hp = int(wild_pokemon_hp_match.group(1))
-                wild_health_percentage = self._calculate_health_percentage(wild_max_hp, wild_current_hp)
+        if wild_pokemon_hp_match:
+            wild_max_hp = int(wild_pokemon_hp_match.group(2))
+            wild_current_hp = int(wild_pokemon_hp_match.group(1))
+            wild_health_percentage = self._calculate_health_percentage(wild_max_hp, wild_current_hp)
 
-                if wild_health_percentage > 50:
-                    logger.debug(f"{pok_name} health is high ({wild_health_percentage}%), clicking first option (Fight).")
-                    await asyncio.sleep(1)
-                    try:
-                        await self._click_button(event=event, i=0, j=0)
-                    except (DataInvalidError, MessageIdInvalidError) as e:
-                        logger.warning(f'Failed to click first option for {pok_name} with high health: {e}')
-                    except Exception as e:
-                        logger.exception(f'Unexpected error clicking first option for {pok_name} with high health: {e}')
+            if wild_health_percentage > 50:
+                logger.debug(f"{pok_name} health is high ({wild_health_percentage}%), clicking first option (Fight).")
+                await asyncio.sleep(1)
+                try:
+                    await self._click_button(event=event, i=0, j=0)
+                except (DataInvalidError, MessageIdInvalidError) as e:
+                    logger.warning(f'Failed to click first option for {pok_name} with high health: {e}')
+                except Exception as e:
+                    logger.exception(f'Unexpected error clicking first option for {pok_name} with high health: {e}')
 
-                elif wild_health_percentage <= 50:
-                    logger.debug(f"{pok_name} health is low ({wild_health_percentage}%), using Poke Balls.")
-                    await asyncio.sleep(1)
-                    try:
-                        await self._click_button(event=event, text="Poke Balls")
-                        await asyncio.sleep(constants.COOLDOWN())
-                        new_event = await self._reload_message(event)
-                        if new_event:
-                            event = new_event
-                        for ball_name in POKEBALL_BUTTON_TEXT_MAP:
-                            if pok_name in getattr(constants, f'{ball_name.upper()}_BALL', []):
-                                available_balls: list[str] = []
-                                for row in event.reply_markup.rows:
-                                    for button in row.buttons:
-                                        available_balls.append(button.text)
-                                if not available_balls:
-                                    warning = "Looks Like You don't have enough pokè balls"
-                                    await event.reply(message=warning)
-                                    logger.warning(warning)
-                                    return
-                                if ball_name not in available_balls:
-                                    warning = f"Looks Like You don't have enough {ball_name} balls. using default {available_balls[-1]} ball."
-                                    await event.reply(message=warning)
-                                    logger.warning(warning)
-                                    ball_name = available_balls[-1]
-                                await self._click_button(event=event, text=ball_name)
-                                logger.debug(f"Clicked on {ball_name} Ball for {pok_name}.")
-                                self.activity_monitor.record_activity(activity_type=ActivityType.POKEBALL_USED, value=ball_name)
-                                break
-                        else:
-                            logger.debug(f"No specific ball configured for {pok_name}.")
-                    except (DataInvalidError, MessageIdInvalidError) as e:
-                        logger.warning(f'Failed to click Poke Balls for {pok_name} with low health: {e}')
-                    except Exception as e:
-                        logger.exception(f'Unexpected error clicking Poke Balls for {pok_name} with low health: {e}')
-                logger.debug(f'{pok_name} health percentage: {wild_health_percentage}%')
+            elif wild_health_percentage <= 50:
+                logger.debug(f"{pok_name} health is low ({wild_health_percentage}%), using Poke Balls.")
+                await asyncio.sleep(1)
+                try:
+                    await self._click_button(event=event, text="Poke Balls")
+                    await asyncio.sleep(constants.COOLDOWN())
+                    new_event = await self._reload_message(event)
+                    if new_event:
+                        event = new_event
+                    for ball_name in POKEBALL_BUTTON_TEXT_MAP:
+                        if pok_name in getattr(constants, f'{ball_name.upper()}_BALL', []):
+                            available_balls: list[str] = []
+                            for row in event.reply_markup.rows:
+                                for button in row.buttons:
+                                    available_balls.append(button.text)
+                            if not available_balls:
+                                logger.warning("Looks like you don't have enough Poké Balls.")
+                                return
+                            if ball_name not in available_balls:
+                                logger.warning(f"Looks like you don't have enough {ball_name} balls. Using default {available_balls[-1]} ball.")
+                                ball_name = available_balls[-1]
+                            await self._click_button(event=event, text=ball_name)
+                            logger.debug(f"Clicked on {ball_name} Ball for {pok_name}.")
+                            self.activity_monitor.record_activity(activity_type=ActivityType.POKEBALL_USED, value=ball_name)
+                            break
+                    else:
+                        logger.debug(f"No specific ball configured for {pok_name}.")
+                except (DataInvalidError, MessageIdInvalidError) as e:
+                    logger.warning(f'Failed to click Poke Balls for {pok_name} with low health: {e}')
+                except Exception as e:
+                    logger.exception(f'Unexpected error clicking Poke Balls for {pok_name} with low health: {e}')
+            logger.debug(f'{pok_name} health percentage: {wild_health_percentage}%')
 
-            else:
-                logger.warning(f"Wild Pokemon HP info not found in battle message for {pok_name}.")
+        else:
+            logger.warning(f"Wild Pokemon HP info not found in battle message for {pok_name}.")
 
   
     async def handle_after_battle(self, event: events.MessageEdited.Event) -> None:
