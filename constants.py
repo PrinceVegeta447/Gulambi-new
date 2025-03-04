@@ -24,7 +24,7 @@ REPEAT_BALL = set([
 ])
 
 # Owner and Bot Information
-OWNER_NAME = "Enryu"
+OWNER_NAME = "Vegeta"
 BOT_VERSION = "1.0"
 
 # Commands
