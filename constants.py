@@ -6,7 +6,7 @@ import random
 SAFARI = set([])
 NEST_BALL = set([])
 ULTRA_BALL = set([])
-GREAT_BALL = set(["Abra"])
+GREAT_BALL = set([])
 REGULAR_BALL = set([
     "Magikarp", "Darumaka", "Darmanitan", "Wishiwashi", "Drakloak", "Duraludon", "Rotom", 
     "Tentacruel", "Snorlax", "Overqwil", "Munchlax", "Kleavor", "Fennekin", "Delphox", "Braixen", 
@@ -29,7 +29,7 @@ REGULAR_BALL = set([
     "Unfezant", "Tranquill", "Pidove", "Barraskewda", "Arrokuda", "Zubat", "Golbat", "Gastly", "Haunter", 
     "Clauncher", "Clawitzer", "Froslass", "Cutiefly", "Ribombee", "Arctozolt", "Arctovish", "Chewtle", 
     "Cufant", "Impidimp", "Morgrem", "Hatenna", "Hattrem", "Trumbeak", "Charjabug", "Rockruff", "Mudbray", 
-    "Bounsweet", "Steenee", "Sliggoo", "Squirtle", "Wartortle", "Mantine", "Mantyke", "Gligar", "Gliscor"
+    "Bounsweet", "Steenee", "Sliggoo", "Squirtle", "Wartortle", "Mantine", "Mantyke", "Gligar", "Gliscor", "Abra
 ])
      
 REPEAT_BALL = set([
