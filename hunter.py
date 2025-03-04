@@ -506,7 +506,7 @@ class PokemonHuntingEngine:
                 logger.warning(f"Wild Pokemon HP info not found in battle message for {pok_name}.")
 
 
-    async def battle(self, event: events.MessageEdited.Event) -> None:
+async def battle(self, event: events.MessageEdited.Event) -> None:
     """Handles ongoing battle messages, making decisions based on Pokemon health."""
     substring = 'Wild'
     if substring in event.raw_text and self.automation_orchestrator.is_automation_active:
